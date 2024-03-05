@@ -6,13 +6,13 @@ Servo myservo;  // create servo object to control a servo
 // 16 servo objects can be created on the ESP32
 
 int pos = 0;  // variable to store the servo position
-int servoPin = 4;
+int servoPin = 14;
 
 //DC motor
 const int DC_MOTOR_1_PWM_PIN = 2;
 const int DC_MOTOR_1_FORWARD_PIN = 11;
-const int DC_MOTOR_1_BACK_PIN = 1;
-const int DC_MOTOR_1_STANDBY_PIN = 10;
+const int DC_MOTOR_1_BACK_PIN = 12;
+const int DC_MOTOR_1_STANDBY_PIN = 13;
 
 int current_steering_angle = 90;
 
@@ -32,31 +32,31 @@ void i_received_data_from_remote(const uint8_t *mac, const uint8_t *incomingData
   Serial.println(incomingData[2]);
   if (incomingData[1] > 130) {
     int pwm = (double)(255.0 / 70.0) * (double)(incomingData[1] - 130);
-    if (pwm > 255){
-      pwm = 255;
+    if (pwm > 165){
+      pwm = 165;
     }
     Serial.print("FWD: ");
     Serial.println(pwm);
 
-    digitalWrite(DC_MOTOR_1_FORWARD_PIN, 1);  //set forward direction
-    digitalWrite(DC_MOTOR_1_BACK_PIN, 0);     // back for a motor
+    analogWrite(DC_MOTOR_1_FORWARD_PIN, pwm);  //set forward direction
+    analogWrite(DC_MOTOR_1_BACK_PIN, 0);     // back for a motor
     digitalWrite(DC_MOTOR_1_STANDBY_PIN, 1);  //standby direction
-    analogWrite(DC_MOTOR_1_PWM_PIN, pwm);     //LPWM L motor
+    //analogWrite(DC_MOTOR_1_PWM_PIN, pwm);     //LPWM L motor
 
   } else if (incomingData[1] < 100) {
     int pwm = (double)(255.0 / 100.0) * (double)((-1) * (incomingData[1] - 100));
 
-    if (pwm > 255){
-      pwm = 255;
+    if (pwm > 165){
+      pwm = 165;
     }
 
     Serial.print("Back: ");
     Serial.println(pwm);
 
-    digitalWrite(DC_MOTOR_1_FORWARD_PIN, 0);  //set forward direction
-    digitalWrite(DC_MOTOR_1_BACK_PIN, 1);     // back for a motor
+    analogWrite(DC_MOTOR_1_FORWARD_PIN, 0);  //set forward direction
+    analogWrite(DC_MOTOR_1_BACK_PIN, pwm);     // back for a motor
     digitalWrite(DC_MOTOR_1_STANDBY_PIN, 1);  //standby direction
-    analogWrite(DC_MOTOR_1_PWM_PIN, pwm);     //LPWM L motor
+    //analogWrite(DC_MOTOR_1_PWM_PIN, pwm);     //LPWM L motor
 
   } else if (incomingData[1] > 100 && incomingData[1] < 130) {
         digitalWrite(DC_MOTOR_1_STANDBY_PIN, 0);  //standby direction
@@ -105,7 +105,7 @@ void setup() {
     return;
   }
 
-  pinMode(DC_MOTOR_1_PWM_PIN, OUTPUT);
+  //pinMode(DC_MOTOR_1_PWM_PIN, OUTPUT);
   pinMode(DC_MOTOR_1_FORWARD_PIN, OUTPUT);
   pinMode(DC_MOTOR_1_BACK_PIN, OUTPUT);
   pinMode(DC_MOTOR_1_STANDBY_PIN, OUTPUT);
